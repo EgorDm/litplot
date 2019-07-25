@@ -38,7 +38,7 @@ macro_rules! js_literal (
 );
 
 #[macro_export]
-macro_rules! js_identifier (
+macro_rules! js_ident (
 	($value: expr) => {
 		js::Value::Identifier($value.to_string())
 	};

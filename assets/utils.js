@@ -1,4 +1,4 @@
-function load_binary_base64(data, callback) {
+function fetch_inline_binary_base64(data, callback) {
     let binary_string = window.atob(data);
     let bytes = new Uint8Array(binary_string.length);
     for (let i = 0; i < binary_string.length; i++) {
@@ -7,7 +7,7 @@ function load_binary_base64(data, callback) {
     callback(bytes.buffer);
 }
 
-function load_binary_resource(url, callback) {
+function fetch_remote_binary(url, callback) {
     let req = new XMLHttpRequest();
     req.open('GET', url, true);
     req.responseType = "arraybuffer";
@@ -48,7 +48,7 @@ function element_type_to_format(element_type) {
     return ret;
 }
 
-function parse_lit_container(buffer) {
+function transform_binary_litcontainer(buffer, callback) {
     let dataView = new DataView(buffer);
     let tmp = 0, cursor = 0;
     let progress = (i) => {
@@ -73,5 +73,5 @@ function parse_lit_container(buffer) {
 
     let data = new format.array_type(buffer.slice(cursor, cursor + data_element_count * header.element_size));
 
-    return {...header, data: data};
+    callback({...header, data: data});
 }

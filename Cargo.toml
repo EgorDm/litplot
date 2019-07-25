@@ -10,3 +10,4 @@ litio = {path = "../litcontainers/litio"}
 num-traits = "0.2"
 itertools = "0.8.0"
 typed-html = "0.2.1"
+base64 = "0.10.1"
