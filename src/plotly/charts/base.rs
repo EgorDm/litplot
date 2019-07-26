@@ -1,5 +1,7 @@
 use serde::{Serialize, Serializer, Deserialize};
 use super::types::ChartType;
+use rand::distributions::Alphanumeric;
+use rand::Rng;
 
 #[derive(Debug, Clone, Deserialize)]
 pub enum Visibility {
@@ -26,20 +28,93 @@ impl Serialize for Visibility {
 	}
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Builder)]
-pub struct BaseChart {
+#[derive(Debug, Clone, Serialize, Deserialize, Builder, Getters)]
+pub struct ChartBase {
 	#[serde(skip_serializing)]
 	identifier: String,
-	#[builder(setter(into, strip_option))]
+	#[builder(setter(into, strip_option), default = "None")]
 	#[serde(skip_serializing_if = "Option::is_none")]
 	name: Option<String>,
 	#[serde(rename = "type")]
 	chart_type: ChartType,
 	#[builder(default = "1.")]
 	opacity: f32,
+	#[builder(default = "Visibility::default()")]
 	visibility: Visibility,
 	#[builder(default = "true")]
 	showlegend: bool,
-	#[builder(setter(into, strip_option))]
+	#[builder(setter(into, strip_option), default = "None")]
 	legendgroup: Option<String>
+}
+
+impl Default for ChartBase {
+	fn default() -> Self {
+		let mut rng = rand::thread_rng();
+		let identifier = (0..32).map(|_| rng.sample(Alphanumeric)).collect::<String>();
+		Self {
+			identifier,
+			name: None,
+			chart_type: ChartType::Line,
+			opacity: 1.,
+			visibility: Visibility::Visible,
+			showlegend: true,
+			legendgroup: None
+		}
+	}
+}
+
+pub trait ChartBuilder: Sized {
+	fn get_base(&mut self) -> &mut ChartBase;
+
+	#[allow(unused_mut)]
+	fn identifier(self, value: String) -> Self {
+		let mut new = self;
+		new.get_base().identifier = value;
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn name<VALUE: ::std::convert::Into<String>>(self, value: VALUE) -> Self {
+		let mut new = self;
+		new.get_base().name = Some(value.into());
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn chart_type(self, value: ChartType) -> Self {
+		let mut new = self;
+		new.get_base().chart_type = value;
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn opacity(self, value: f32) -> Self {
+		let mut new = self;
+		new.get_base().opacity = value;
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn visibility(self, value: Visibility) -> Self {
+		let mut new = self;
+		new.get_base().visibility = value;
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn showlegend(self, value: bool) -> Self {
+		let mut new = self;
+		new.get_base().showlegend = value;
+		new
+	}
+
+	#[allow(unused_mut)]
+	fn legendgroup<VALUE: ::std::convert::Into<String>>(
+		self,
+		value: VALUE,
+	) -> Self {
+		let mut new = self;
+		new.get_base().legendgroup = Some(value.into());
+		new
+	}
 }

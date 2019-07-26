@@ -1,20 +1,35 @@
-function fetch_inline_binary_base64(data, callback) {
-    let binary_string = window.atob(data);
-    let bytes = new Uint8Array(binary_string.length);
-    for (let i = 0; i < binary_string.length; i++) {
-        bytes[i] = binary_string.charCodeAt(i);
-    }
-    callback(bytes.buffer);
+function fetch_inline_binary_base64(input) {
+    return new Promise(function() {
+        let binary_string = window.atob(input);
+        let bytes = new Uint8Array(binary_string.length);
+        for (let i = 0; i < binary_string.length; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    });
 }
 
-function fetch_remote_binary(url, callback) {
+function fetch_remote_binary(url) {
     let req = new XMLHttpRequest();
-    req.open('GET', url, true);
-    req.responseType = "arraybuffer";
-    req.onload = function (event) {
-        callback(req.response);
-    };
-    req.send(null);
+
+    return new Promise(function (resolve, reject) {
+        req.onreadystatechange = function () {
+            if (req.readyState !== 4) return;
+
+            if (req.status >= 200 && req.status < 300) {
+                resolve(req.response);
+            } else {
+                reject({
+                    status: req.status,
+                    statusText: req.statusText
+                });
+            }
+        };
+
+        req.open('GET', url, true);
+        req.responseType = "arraybuffer";
+        req.send();
+    });
 }
 
 function element_type_to_format(element_type) {
@@ -48,7 +63,7 @@ function element_type_to_format(element_type) {
     return ret;
 }
 
-function transform_binary_litcontainer(buffer, callback) {
+function transform_binary_litcontainer(buffer) {
     let dataView = new DataView(buffer);
     let tmp = 0, cursor = 0;
     let progress = (i) => {
@@ -73,5 +88,5 @@ function transform_binary_litcontainer(buffer, callback) {
 
     let data = new format.array_type(buffer.slice(cursor, cursor + data_element_count * header.element_size));
 
-    callback({...header, data: data});
+    return {...header, data: data};
 }
