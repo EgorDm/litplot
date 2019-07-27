@@ -21,6 +21,9 @@ fn plot() {
 			.unwrap()
 	);
 
-	println!("{}", plot.get_js());
+	let report = Report::new("Test Report")
+		.add_node(plot);
+
+	println!("{}", report.to_html());
 
 }

@@ -1,2 +1,1 @@
-mod js;
 mod plot;

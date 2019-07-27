@@ -1,4 +1,4 @@
-use crate::plotly::Chart;
+use crate::plotly::{Chart, ToHtml};
 use itertools::Itertools;
 
 pub struct Plot<'a> {
@@ -18,7 +18,7 @@ impl<'a> Plot<'a> {
 		self.charts.push(Box::new(chart))
 	}
 
-	pub fn get_js(&self) -> String {
+	pub fn get_partial_js(&self) -> String {
 		let mut vars = Vec::new();
 		let mut exprs = Vec::new();
 		for (var, expr) in self.charts.iter().map(|c| c.get_preload_data()).flatten() {
@@ -43,5 +43,22 @@ impl<'a> Plot<'a> {
 			charts = charts,
 		)
 	}
+
+	pub fn get_partial_html(&self) -> String {
+		format!(
+			"<div id=\"{ident:}\" class=\"litplot-plotly\"></div>",
+			ident = self.identifier
+		)
+	}
 }
 
+
+impl<'a> ToHtml for Plot<'a> {
+	fn to_html(&self) -> String {
+		format!(
+			"{html:}\n<script>\n{js:}\n</script>",
+			html = self.get_partial_html(),
+			js = self.get_partial_js(),
+		)
+	}
+}

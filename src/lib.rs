@@ -1,12 +1,9 @@
 #[macro_use]
-extern crate typed_html;
-#[macro_use]
 extern crate derive_builder;
 #[macro_use]
 extern crate serde;
 #[macro_use]
 extern crate derive_getters;
-
 
 pub mod plotly;
 
