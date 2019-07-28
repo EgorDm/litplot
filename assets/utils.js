@@ -1,11 +1,11 @@
 function fetch_inline_binary_base64(input) {
-    return new Promise(function() {
+    return new Promise(function(resolve, reject) {
         let binary_string = window.atob(input);
         let bytes = new Uint8Array(binary_string.length);
         for (let i = 0; i < binary_string.length; i++) {
             bytes[i] = binary_string.charCodeAt(i);
         }
-        return bytes.buffer;
+        resolve(bytes.buffer);
     });
 }
 

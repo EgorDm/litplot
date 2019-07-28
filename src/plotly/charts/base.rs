@@ -1,7 +1,6 @@
-use serde::{Serialize, Serializer, Deserialize};
 use super::types::ChartType;
-use rand::distributions::Alphanumeric;
-use rand::Rng;
+use crate::utils;
+use serde::{Serialize, Serializer, Deserialize};
 
 #[derive(Debug, Clone, Deserialize)]
 pub enum Visibility {
@@ -49,8 +48,7 @@ pub struct ChartBase {
 
 impl Default for ChartBase {
 	fn default() -> Self {
-		let mut rng = rand::thread_rng();
-		let identifier = (0..32).map(|_| rng.sample(Alphanumeric)).collect::<String>();
+		let identifier = utils::random_string(32);
 		Self {
 			identifier,
 			name: None,

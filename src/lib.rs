@@ -5,6 +5,8 @@ extern crate serde;
 #[macro_use]
 extern crate derive_getters;
 
+pub mod error;
+pub mod utils;
 pub mod plotly;
 
 

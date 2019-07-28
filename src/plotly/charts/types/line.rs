@@ -1,6 +1,7 @@
+use crate::plotly::*;
+use crate::error::Error;
 use serde::{Serialize, Deserialize};
-use crate::plotly::charts::{Chart, ChartBase, XYData, ChartData};
-use crate::plotly::ChartBuilder;
+use std::path::Path;
 
 
 #[builder(pattern = "owned")]
@@ -29,6 +30,13 @@ impl<'a> Chart for LineChart<'a> {
 
 	fn get_preload_data(&self) -> Vec<(String, String)> {
 		self.data.as_ref().unwrap().get_preload_data(self)
+	}
+
+	fn save_resources(&self, path: &Path) -> Result<(), Error> {
+		match self.data {
+			Some(ref data) => data.save_resources(path),
+			None => Ok(())
+		}
 	}
 }
 

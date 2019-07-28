@@ -1,7 +1,11 @@
 use crate::plotly::{DataProvider, Chart};
+use crate::error::Error;
+use std::path::Path;
 
 pub trait ChartData {
 	fn get_preload_data<C: Chart>(&self, c: &C) -> Vec<(String, String)>;
+
+	fn save_resources(&self, path: &Path) -> Result<(), Error>;
 }
 
 #[derive(Debug)]
@@ -33,5 +37,10 @@ impl<'a> ChartData for XYData<'a>  {
 			(self.get_x_ident(c), self.x.get_data_js()),
 			(self.get_y_ident(c), self.y.get_data_js())
 		]
+	}
+
+	fn save_resources(&self, path: &Path) -> Result<(), Error> {
+		self.x.save_resources(path)?;
+		self.y.save_resources(path)
 	}
 }

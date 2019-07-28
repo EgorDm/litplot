@@ -1,5 +1,7 @@
 use crate::plotly::{Chart, ToHtml};
+use crate::error::Error;
 use itertools::Itertools;
+use std::path::Path;
 
 pub struct Plot<'a> {
 	identifier: String,
@@ -49,6 +51,13 @@ impl<'a> Plot<'a> {
 			"<div id=\"{ident:}\" class=\"litplot-plotly\"></div>",
 			ident = self.identifier
 		)
+	}
+
+	pub fn save_resources(&self, path: &Path) -> Result<(), Error> {
+		for c in &self.charts {
+			c.save_resources(path)?;
+		}
+		Ok(())
 	}
 }
 

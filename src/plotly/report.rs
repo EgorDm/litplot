@@ -1,9 +1,10 @@
 use crate::plotly::{Plot, ToHtml};
+use crate::error::*;
 use std::path::Path;
-use std::fmt;
 use itertools::Itertools;
 use std::fs::File;
 use std::io::Write;
+use std::fs;
 
 pub enum ReportNode<'a> {
 	Plot(Plot<'a>),
@@ -48,8 +49,25 @@ impl<'a> Report<'a> {
 			return Err("Path must point to a directory".into())
 		}
 
-		let mut f = File::create(path)?;
+		let mut f = File::create(path.join("index.html"))?;
 		write!(f, "{}", self.to_html())?;
+
+		// Copy content TODO: the whole assets dir
+		let js = include_str!("../../assets/utils.js");
+		let mut f = File::create(path.join("utils.js"))?;
+		write!(f, "{}", js)?;
+
+		let assets_path = path.join("assets");
+		if !assets_path.exists() {
+			fs::create_dir(&assets_path)?;
+		}
+
+		for n in &self.nodes {
+			match n {
+				ReportNode::Plot(p) => p.save_resources(&assets_path)?,
+				_ => {}
+			}
+		}
 
 		Ok(())
 	}
@@ -57,9 +75,14 @@ impl<'a> Report<'a> {
 
 impl<'a> ToHtml for Report<'a> {
 	fn to_html(&self) -> String {
+		let head = [
+			r#"<script src="./utils.js"></script>"#,
+			r#"<script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>"#
+		].join("\n");
 		let nodes = self.nodes.iter().map(|n| n.to_html()).join("\n");
 		format!(
-			"<html>\n<head>\n</head>\n<body>\n{nodes:}\n</body>\n</html>",
+			"<html>\n{head:}\n<head>\n</head>\n<body>\n{nodes:}\n</body>\n</html>",
+			head = head,
 			nodes = nodes,
 		)
 	}
@@ -67,21 +90,3 @@ impl<'a> ToHtml for Report<'a> {
 
 
 
-#[derive(Debug, Clone)]
-pub struct Error(String);
-
-impl fmt::Display for Error {
-	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-		write!(f, "{}", self.0)
-	}
-}
-
-impl std::error::Error for Error {}
-
-impl From<&str> for Error {
-	fn from(s: &str) -> Self { Self(s.to_string()) }
-}
-
-impl From<std::io::Error> for Error {
-	fn from(e: std::io::Error) -> Self { Self(e.to_string())}
-}
