@@ -1,9 +1,13 @@
 use crate::plotly::*;
+use crate::error::Error;
 use serde::export::PhantomData;
-use serde::export::fmt::Debug;
+use std::path::Path;
+use std::fmt::Debug;
 
 pub trait DataProvider: Debug {
 	fn get_data_js(&self) -> String;
+
+	fn save_resources(&self, path: &Path) -> Result<(), Error>;
 }
 
 #[derive(Debug, Clone)]
@@ -35,4 +39,6 @@ impl<F, T> DataProvider for BasicProvider<F, T>
 			prepare = T::get_data_fn()
 		)
 	}
+
+	fn save_resources(&self, path: &Path) -> Result<(), Error> { Ok(()) }
 }
