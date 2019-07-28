@@ -44,6 +44,15 @@ impl<'a> Report<'a> {
 		self_mut
 	}
 
+	pub fn force_save(&self, path: &Path)-> Result<(), Error> {
+		if path.exists() {
+			fs::remove_dir_all(&path)?;
+		}
+		fs::create_dir(&path)?;
+
+		self.save(path)
+	}
+
 	pub fn save(&self, path: &Path) -> Result<(), Error> {
 		if !path.is_dir() {
 			return Err("Path must point to a directory".into())

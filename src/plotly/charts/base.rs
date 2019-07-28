@@ -61,14 +61,14 @@ pub trait ChartBuilder: Sized {
 	fn get_base(&mut self) -> &mut ChartBase;
 
 	#[allow(unused_mut)]
-	fn identifier(self, value: String) -> Self {
+	fn identifier<V: Into<String>>(self, value: V) -> Self {
 		let mut new = self;
-		new.get_base().identifier = value;
+		new.get_base().identifier = value.into();
 		new
 	}
 
 	#[allow(unused_mut)]
-	fn name<VALUE: ::std::convert::Into<String>>(self, value: VALUE) -> Self {
+	fn name<V: Into<String>>(self, value: V) -> Self {
 		let mut new = self;
 		new.get_base().name = Some(value.into());
 		new
@@ -96,10 +96,7 @@ pub trait ChartBuilder: Sized {
 	}
 
 	#[allow(unused_mut)]
-	fn legendgroup<VALUE: ::std::convert::Into<String>>(
-		self,
-		value: VALUE,
-	) -> Self {
+	fn legendgroup<V: Into<String>>(self, value: V) -> Self {
 		let mut new = self;
 		new.get_base().legendgroup = Some(value.into());
 		new

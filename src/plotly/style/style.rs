@@ -1,5 +1,5 @@
 use serde::{Serialize};
-use crate::plotly::{Axis, Calendar, HoverLabel, Margin, Legend, Title};
+use crate::plotly::{Axis, Calendar, HoverLabel, Margin, Legend};
 
 
 // TODO: add more options which are in official docs. So much work

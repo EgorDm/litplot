@@ -38,7 +38,7 @@ fn serialize_mode<S>(m: &Vec<Mode>, s: S) -> Result<S::Ok, S::Error>
 
 #[builder(pattern = "owned")]
 #[derive(Debug, Serialize, Builder)]
-pub struct LineChart<'a> {
+pub struct Line<'a> {
 	#[builder(default = "ChartType::Line")]
 	#[serde(rename = "type")]
 	chart_type: ChartType,
@@ -52,7 +52,7 @@ pub struct LineChart<'a> {
 	data: Option<XYData<'a>>
 }
 
-impl<'a> Chart for LineChart<'a> {
+impl<'a> Chart for Line<'a> {
 	fn identifier(&self) -> &str { self.base.identifier() }
 
 	fn to_js(&self) -> String {
@@ -70,7 +70,7 @@ impl<'a> Chart for LineChart<'a> {
 	fn chart_type(&self) -> ChartType { self.chart_type }
 }
 
-impl<'a> ResourceData for LineChart<'a> {
+impl<'a> ResourceData for Line<'a> {
 	fn save_resources(&self, path: &Path) -> Result<(), Error> {
 		match self.data {
 			Some(ref data) => data.save_resources(path),
@@ -79,7 +79,7 @@ impl<'a> ResourceData for LineChart<'a> {
 	}
 }
 
-impl<'a> ChartBuilder for LineChartBuilder<'a>  {
+impl<'a> ChartBuilder for LineBuilder<'a>  {
 	fn get_base(&mut self) -> &mut ChartBase {
 		match self.base {
 			Some(ref mut b) => b,

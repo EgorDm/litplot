@@ -1,6 +1,5 @@
 use litplot::plotly::*;
 use std::path::Path;
-use std::fs;
 use litcontainers::*;
 
 #[test]
@@ -15,10 +14,10 @@ fn plot() {
 	let x = RowVec::regspace_rows(U1, U20, 0.);
 	let y = (&x).pow(2);
 
-	let plot = Plot::new("plot_1".to_string())
+	let plot = Plot::new("plot_1")
 		.add_chart(
-			LineChartBuilder::default()
-				.identifier("chart_1".to_string())
+			LineBuilder::default()
+				.identifier("chart_1")
 				.data(XYData::new(
 					provider_litcontainer(Fetch::Inline, &x, Some("chart_1_x".into())).unwrap(),
 					provider_litcontainer(Fetch::Remote, &y, Some("chart_1_y".into())).unwrap(),
@@ -27,8 +26,8 @@ fn plot() {
 				.unwrap()
 		)
 		.add_chart(
-			LineChartBuilder::default()
-				.identifier("chart_2".to_string())
+			LineBuilder::default()
+				.identifier("chart_2")
 				.data(XYData::new(
 					provider_litcontainer(Fetch::Inline, &x, None).unwrap(),
 					provider_litcontainer(Fetch::Remote, &(y + 10.), None).unwrap(),
@@ -54,7 +53,7 @@ fn plot() {
 
 	let plot2 = Plot::new("plot_2".to_string())
 		.add_chart(
-			HeatmapChartBuilder::default()
+			HeatmapBuilder::default()
 				.identifier("chart_3".to_string())
 				.data(XYZData::new(
 					provider_litcontainer(Fetch::Remote, &x, None).unwrap(),
@@ -66,7 +65,7 @@ fn plot() {
 		)
 		.set_style(
 			StyleBuilder::default()
-				.title("Test Histogram".to_string())
+				.title("Test Histogram")
 				.legend(LegendBuilder::default().valign(VAlign::Bottom).build().unwrap())
 				.build().unwrap()
 		);
@@ -75,13 +74,6 @@ fn plot() {
 		.add_node(plot)
 		.add_node(plot2);
 
-	println!("{}", report.to_html());
-
-	let in_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tmp").join("plot_1");
-	if in_path.exists() {
-		fs::remove_dir_all(&in_path).unwrap()
-	}
-	fs::create_dir(&in_path).unwrap();
-
-	report.save(in_path.as_path()).unwrap();
+	let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tmp").join("plot_1");
+	report.force_save(path.as_path()).unwrap();
 }

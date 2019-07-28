@@ -10,9 +10,9 @@ pub struct Plot<'a> {
 }
 
 impl<'a> Plot<'a> {
-	pub fn new(identifier: String) -> Self {
+	pub fn new<V: Into<String>>(identifier: V) -> Self {
 		Self {
-			identifier,
+			identifier: identifier.into(),
 			charts: Vec::new(),
 			style: None,
 		}

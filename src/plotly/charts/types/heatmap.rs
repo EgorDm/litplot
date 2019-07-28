@@ -4,7 +4,7 @@ use std::path::Path;
 
 #[builder(pattern = "owned")]
 #[derive(Debug, Serialize, Builder)]
-pub struct HeatmapChart<'a> {
+pub struct Heatmap<'a> {
 	#[builder(default = "ChartType::Heatmap")]
 	#[serde(rename = "type")]
 	chart_type: ChartType,
@@ -19,7 +19,7 @@ pub struct HeatmapChart<'a> {
 	showscale: bool,
 }
 
-impl<'a> Chart for HeatmapChart<'a> {
+impl<'a> Chart for Heatmap<'a> {
 	fn identifier(&self) -> &str { self.base.identifier() }
 
 	fn to_js(&self) -> String {
@@ -37,7 +37,7 @@ impl<'a> Chart for HeatmapChart<'a> {
 	fn chart_type(&self) -> ChartType { self.chart_type }
 }
 
-impl<'a> ResourceData for HeatmapChart<'a> {
+impl<'a> ResourceData for Heatmap<'a> {
 	fn save_resources(&self, path: &Path) -> Result<(), Error> {
 		match self.data {
 			Some(ref data) => data.save_resources(path),
@@ -46,7 +46,7 @@ impl<'a> ResourceData for HeatmapChart<'a> {
 	}
 }
 
-impl<'a> ChartBuilder for HeatmapChartBuilder<'a>  {
+impl<'a> ChartBuilder for HeatmapBuilder<'a>  {
 	fn get_base(&mut self) -> &mut ChartBase {
 		match self.base {
 			Some(ref mut b) => b,
