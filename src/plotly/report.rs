@@ -77,7 +77,7 @@ impl<'a> ToHtml for Report<'a> {
 	fn to_html(&self) -> String {
 		let head = [
 			r#"<script src="./utils.js"></script>"#,
-			r#"<script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>"#
+			r#"<script src="https://cdn.plot.ly/plotly-1.49.0.min.js"></script>"#
 		].join("\n");
 		let nodes = self.nodes.iter().map(|n| n.to_html()).join("\n");
 		format!(

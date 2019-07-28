@@ -1,23 +1,33 @@
-use crate::plotly::{Chart, ToHtml};
+use crate::plotly::{Chart, ToHtml, Style};
 use crate::error::Error;
 use itertools::Itertools;
 use std::path::Path;
 
 pub struct Plot<'a> {
 	identifier: String,
-	charts: Vec<Box<dyn Chart + 'a>>
+	charts: Vec<Box<dyn Chart + 'a>>,
+	style: Option<Style>
 }
 
 impl<'a> Plot<'a> {
 	pub fn new(identifier: String) -> Self {
 		Self {
 			identifier,
-			charts: Vec::new()
+			charts: Vec::new(),
+			style: None,
 		}
 	}
 
-	pub fn add_chart<C: Chart + 'a>(&mut self, chart: C) {
-		self.charts.push(Box::new(chart))
+	pub fn add_chart<C: Chart + 'a>(self, chart: C) -> Self {
+		let mut self_mut = self;
+		self_mut.charts.push(Box::new(chart));
+		self_mut
+	}
+
+	pub fn set_style(self, style: Style) -> Self {
+		let mut self_mut = self;
+		self_mut.style = Some(style);
+		self_mut
 	}
 
 	pub fn get_partial_js(&self) -> String {
@@ -37,12 +47,18 @@ impl<'a> Plot<'a> {
 		let configs = self.charts.iter().map(|c| c.to_js()).join("\n");
 		let charts = self.charts.iter().map(|c| c.identifier()).join(",");
 
+		let style = match self.style {
+			Some(ref style) => serde_json::to_string(style).unwrap(),
+			None => "{}".to_string()
+		};
+
 		format!(
-			"async function {ident:}() {{ {preload:} {configs:} Plotly.newPlot('{ident:}', [{charts}], {{}}); }} {ident:}();",
+			"async function {ident:}() {{ {preload:} {configs:} Plotly.newPlot('{ident:}', [{charts}], {style:}); }} {ident:}();",
 			ident = self.identifier,
 			preload = preload,
 			configs = configs,
 			charts = charts,
+			style = style,
 		)
 	}
 
