@@ -6,6 +6,8 @@ pub trait DataFormat: Debug + Clone {
 
 pub trait DataType: Debug + Clone {
 	fn get_data_fn() -> String;
+
+	fn extension() -> String;
 }
 
 pub trait Transformer<T: DataFormat> {
@@ -34,7 +36,9 @@ impl DataFormat for Binary {
 pub struct Litcontainer;
 
 impl DataType for Litcontainer {
-	fn get_data_fn() -> String { "(function (i) {return Array.from(i.data)})".to_string() }
+	fn get_data_fn() -> String { "prepare_litcontainer_data".to_string() }
+
+	fn extension() -> String { "lit".into() }
 }
 
 impl Transformer<Binary> for Litcontainer {

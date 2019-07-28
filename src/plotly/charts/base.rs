@@ -1,4 +1,3 @@
-use super::types::ChartType;
 use crate::utils;
 use serde::{Serialize, Serializer, Deserialize};
 
@@ -34,8 +33,6 @@ pub struct ChartBase {
 	#[builder(setter(into, strip_option), default = "None")]
 	#[serde(skip_serializing_if = "Option::is_none")]
 	name: Option<String>,
-	#[serde(rename = "type")]
-	chart_type: ChartType,
 	#[builder(default = "1.")]
 	opacity: f32,
 	#[builder(default = "Visibility::default()")]
@@ -52,7 +49,6 @@ impl Default for ChartBase {
 		Self {
 			identifier,
 			name: None,
-			chart_type: ChartType::Line,
 			opacity: 1.,
 			visibility: Visibility::Visible,
 			showlegend: true,
@@ -75,13 +71,6 @@ pub trait ChartBuilder: Sized {
 	fn name<VALUE: ::std::convert::Into<String>>(self, value: VALUE) -> Self {
 		let mut new = self;
 		new.get_base().name = Some(value.into());
-		new
-	}
-
-	#[allow(unused_mut)]
-	fn chart_type(self, value: ChartType) -> Self {
-		let mut new = self;
-		new.get_base().chart_type = value;
 		new
 	}
 

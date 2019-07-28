@@ -81,7 +81,8 @@ impl<'a> ToHtml for Report<'a> {
 		].join("\n");
 		let nodes = self.nodes.iter().map(|n| n.to_html()).join("\n");
 		format!(
-			"<html>\n{head:}\n<head>\n</head>\n<body>\n{nodes:}\n</body>\n</html>",
+			"<html>\n<title>\n{title:}\n</title>\n{head:}\n<head>\n</head>\n<body>\n{nodes:}\n</body>\n</html>",
+			title = self.title,
 			head = head,
 			nodes = nodes,
 		)

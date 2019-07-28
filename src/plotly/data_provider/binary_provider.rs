@@ -36,7 +36,7 @@ impl<T> DataProvider for BinaryProvider<T>
 	fn get_data_js(&self) -> String {
 		let input = match self.fetch_type {
 			Fetch::Inline => base64::encode(&self.input),
-			Fetch::Remote => format!("./assets/{}", self.filename)
+			Fetch::Remote => format!("./assets/{}.{}", self.filename, T::extension())
 		};
 
 		format!(
@@ -52,7 +52,7 @@ impl<T> DataProvider for BinaryProvider<T>
 		match self.fetch_type {
 			Fetch::Inline => {},
 			Fetch::Remote => {
-				let path = path.join(&self.filename);
+				let path = path.join(format!("{}.{}", &self.filename, T::extension()));
 				File::create(path)?.write(&self.input)?;
 			}
 		}

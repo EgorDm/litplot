@@ -1,5 +1,5 @@
 function fetch_inline_binary_base64(input) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         let binary_string = window.atob(input);
         let bytes = new Uint8Array(binary_string.length);
         for (let i = 0; i < binary_string.length; i++) {
@@ -89,4 +89,24 @@ function transform_binary_litcontainer(buffer) {
     let data = new format.array_type(buffer.slice(cursor, cursor + data_element_count * header.element_size));
 
     return {...header, data: data};
+}
+
+function prepare_litcontainer_data(container) {
+    if (container.rows === 1 || container.cols === 1) {
+        return Array.from(container.data)
+    } else if (container.col_stride === 1) {
+        let ret = [];
+        for (let i = 0; i < container.rows * container.cols; i += container.cols) {
+            ret.push(Array.from(container.data.slice(i, i + container.cols)));
+        }
+        return ret;
+    } else if (container.row_stride === 1) {
+        let ret = [];
+        for (let i = 0; i < container.rows * container.cols; i += container.rows) {
+            ret.push(Array.from(container.data.slice(i, i + container.rows)));
+        }
+        return ret;
+    } else {
+        return Array.from(container.data)
+    }
 }

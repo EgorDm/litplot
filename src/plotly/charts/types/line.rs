@@ -1,17 +1,52 @@
 use crate::plotly::*;
 use crate::error::Error;
-use serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize, Serializer};
 use std::path::Path;
+use itertools::Itertools;
+use std::fmt;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Mode {
+	#[serde(rename = "lines")]
+	Lines,
+	#[serde(rename = "markers")]
+	Markers,
+	#[serde(rename = "text")]
+	Text,
+	#[serde(rename = "none")]
+	None
+}
+
+impl fmt::Display for Mode {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		match self {
+			Mode::Lines => write!(f, "lines"),
+			Mode::Markers => write!(f, "markers"),
+			Mode::Text => write!(f, "text"),
+			Mode::None => write!(f, "none"),
+		}
+	}
+}
+
+fn serialize_mode<S>(m: &Vec<Mode>, s: S) -> Result<S::Ok, S::Error>
+	where S: Serializer,
+{
+	let m = m.iter().join("+");
+	s.serialize_str(&m)
+}
 
 
 #[builder(pattern = "owned")]
-#[derive(Debug, Serialize, Deserialize, Builder)]
+#[derive(Debug, Serialize, Builder)]
 pub struct LineChart<'a> {
+	#[builder(default = "ChartType::Line")]
+	#[serde(rename = "type")]
+	chart_type: ChartType,
 	#[serde(flatten)]
 	base: ChartBase,
-	#[builder(setter(into, strip_option), default = "None")]
-	#[serde(skip_serializing_if = "Option::is_none")]
-	mode: Option<String>,
+	#[builder(setter(into, strip_option), default = "vec![Mode::Lines]")]
+	#[serde(serialize_with = "serialize_mode")]
+	mode: Vec<Mode>,
 	#[builder(setter(into, strip_option))]
 	#[serde(skip_serializing, skip_deserializing)]
 	data: Option<XYData<'a>>
@@ -32,6 +67,10 @@ impl<'a> Chart for LineChart<'a> {
 		self.data.as_ref().unwrap().get_preload_data(self)
 	}
 
+	fn chart_type(&self) -> ChartType { self.chart_type }
+}
+
+impl<'a> ResourceData for LineChart<'a> {
 	fn save_resources(&self, path: &Path) -> Result<(), Error> {
 		match self.data {
 			Some(ref data) => data.save_resources(path),
@@ -40,7 +79,7 @@ impl<'a> Chart for LineChart<'a> {
 	}
 }
 
-impl<'a>  ChartBuilder for LineChartBuilder<'a>  {
+impl<'a> ChartBuilder for LineChartBuilder<'a>  {
 	fn get_base(&mut self) -> &mut ChartBase {
 		match self.base {
 			Some(ref mut b) => b,

@@ -40,5 +40,5 @@ impl<F, T> DataProvider for BasicProvider<F, T>
 		)
 	}
 
-	fn save_resources(&self, path: &Path) -> Result<(), Error> { Ok(()) }
+	fn save_resources(&self, _path: &Path) -> Result<(), Error> { Ok(()) }
 }
