@@ -1,4 +1,4 @@
-use crate::plotly::{Plot, ToHtml};
+use crate::plotly::{Plot, ToHtml, constants};
 use crate::error::*;
 use std::path::Path;
 use itertools::Itertools;
@@ -84,9 +84,10 @@ impl<'a> Report<'a> {
 
 impl<'a> ToHtml for Report<'a> {
 	fn to_html(&self) -> String {
+		let plotly = format!(r#"<script src="{}"></script>"#, constants::PLOTLY_URL);
 		let head = [
 			r#"<script src="./utils.js"></script>"#,
-			r#"<script src="https://cdn.plot.ly/plotly-1.49.0.min.js"></script>"#
+			&plotly
 		].join("\n");
 		let nodes = self.nodes.iter().map(|n| n.to_html()).join("\n");
 		format!(

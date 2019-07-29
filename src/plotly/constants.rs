@@ -1,0 +1,1 @@
+pub const PLOTLY_URL: &str = "https://cdn.plot.ly/plotly-1.49.0.min.js";
