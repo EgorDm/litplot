@@ -13,7 +13,7 @@ pub struct Heatmap<'a> {
 	#[builder(setter(into, strip_option))]
 	#[serde(skip_serializing, skip_deserializing)]
 	data: Option<XYZData<'a>>,
-	#[builder(default = "\"Hot\".to_string()")]
+	#[builder(default = "\"Viridis\".to_string()")]
 	colorscale: String,
 	#[builder(default = "true")]
 	showscale: bool,
