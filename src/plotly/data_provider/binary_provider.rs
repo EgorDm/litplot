@@ -6,7 +6,6 @@ use std::path::Path;
 use std::fs::File;
 use std::io::Write;
 use litcontainers::*;
-use serde::Serialize;
 use litio::SerializableScalar;
 
 #[derive(Debug, Clone)]
