@@ -11,7 +11,7 @@ fn plot_line() {
 
 #[test]
 fn plot() {
-	let x = RowVec::regspace_rows(U1, U20, 0.);
+	let x = RowVec::regspace(Size::new(U1, U20), RowAxis, 0.);
 	let y = (&x).pow(2);
 
 	let plot = Plot::new("plot_1")
@@ -47,9 +47,9 @@ fn plot() {
 				.build().unwrap()
 		);
 
-	let x = RowVec::regspace_rows(U1, U20, 0.);
-	let y = RowVec::regspace_rows(U1, U10, 0.);
-	let z = ContainerRM::regspace_rows(U10, U20, 0.) / 20.;
+	let x = RowVec::regspace(Size::new(U1, U20), RowAxis, 0.);
+	let y = RowVec::regspace(Size::new(U1, U10), RowAxis, 0.);
+	let z = ContainerRM::regspace(Size::new(U10, U20), RowAxis, 0.) / 20.;
 
 	let plot2 = Plot::new("plot_2".to_string())
 		.add_chart(

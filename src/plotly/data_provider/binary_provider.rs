@@ -60,9 +60,9 @@ impl<T> DataProvider for BinaryProvider<T>
 	}
 }
 
-pub fn provider_litcontainer<T, R, C, S>(fetch_type: Fetch, storage: &S, filename: Option<String>)
+pub fn provider_litcontainer<T, S>(fetch_type: Fetch, storage: &S, filename: Option<String>)
 	-> Result<BinaryProvider<Litcontainer>, Error>
-	where T: Scalar + SerializableScalar, R: Dim, C: Dim, S: Storage<T, R, C>/* + StorageConstructor<T, R, C>*/
+	where T: Scalar + SerializableScalar, S: Storage<T>/* + StorageConstructor<T, R, C>*/
 {
 	let mut bytes = Vec::new();
 	litio::write_binary(&mut bytes, storage)?;
