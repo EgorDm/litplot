@@ -35,29 +35,45 @@ function fetch_remote_binary(url) {
 function element_type_to_format(element_type) {
     let ret = {
         array_type: null,
-        is_complex: (element_type & 1) === 1
+        is_complex: (element_type & 1) === 128
     };
 
-    element_type = element_type & ~1;
-    switch (element_type) {
-        case 2:
-            ret.array_type = Float32Array;
-            break;
-        case 4:
-            ret.array_type = Float64Array;
-            break;
-        case 8:
-            ret.array_type = Uint8Array;
-            break;
-        case 16:
-            ret.array_type = Int16Array;
-            break;
-        case 32:
-            ret.array_type = Int32Array;
-            break;
-        case 64:
-            ret.array_type = BigInt64Array;
-            break;
+    if((element_type & 64)) {
+        ret.array_type = Uint8Array;
+    } else {
+        switch (element_type) {
+            case 1:
+                ret.array_type = Uint8Array;
+                break;
+            case 2:
+                ret.array_type = Int8Array;
+                break;
+            case 3:
+                ret.array_type = Uint16Array;
+                break;
+            case 4:
+                ret.array_type = Int16Array;
+                break;
+            case 5:
+                ret.array_type = Uint32Array;
+                break;
+            case 6:
+                ret.array_type = Int32Array;
+                break;
+            case 7:
+                ret.array_type = BigUint64Array;
+                break;
+            case 8:
+                ret.array_type = BigInt64Array;
+                break;
+            case 11:
+                ret.array_type = Float32Array;
+                break;
+            case 12:
+                ret.array_type = Float64Array;
+                break;
+                // Rest is unsupported
+        }
     }
 
     return ret;
